@@ -1,3 +1,3 @@
  # Java
 
- Сонар - https://sonarcloud.io/project/overview?id=ilyamzr_Java
+ Сонар - https://sonarcloud.io/project/overview?id=ilyamzr_JavaLabs
