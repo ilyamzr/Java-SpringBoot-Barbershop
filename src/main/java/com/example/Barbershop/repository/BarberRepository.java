@@ -1,5 +1,6 @@
-package com.example.demo;
+package com.example.barbershop.repository;
 
+import com.example.barbershop.model.Barber;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Repository;

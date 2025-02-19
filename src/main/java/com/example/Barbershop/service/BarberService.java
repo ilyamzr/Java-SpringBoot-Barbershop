@@ -1,5 +1,8 @@
-package com.example.demo;
+package com.example.barbershop.service;
 
+import com.example.barbershop.dto.ResponseDto;
+import com.example.barbershop.model.Barber;
+import com.example.barbershop.repository.BarberRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,8 @@ public class BarberService {
 
         for (Barber barber : availableBarbers) {
             if (barber.getName().equalsIgnoreCase(barberName)) {
-                return new ResponseDto(str + barberName + " is available on: " + String.join(", ", barber.getWorkingDays()));
+                return new ResponseDto(str + barberName + " is available on: "
+                        + String.join(", ", barber.getWorkingDays()));
             }
         }
         return new ResponseDto(str + barberName + " is not found.");

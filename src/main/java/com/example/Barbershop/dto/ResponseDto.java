@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.barbershop.dto;
 
 public class ResponseDto {
     private String message;
