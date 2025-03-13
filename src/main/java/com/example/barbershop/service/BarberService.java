@@ -24,7 +24,6 @@ public class BarberService {
 
     private final BarberRepository barberRepository;
     private final OfferingRepository offeringRepository;
-    private final ScheduleRepository scheduleRepository;
 
     public List<BarberDto> findAll() {
         return barberRepository.findAll().stream()
@@ -48,7 +47,6 @@ public class BarberService {
         Barber barber = barberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(BARBER_NOT_FOUND));
         barber.setName(barberDto.getName());
-        barber.setWorkingDays(barberDto.getWorkingDays());
         Barber updated = barberRepository.save(barber);
         return BarberMapper.toDto(updated);
     }
@@ -85,9 +83,4 @@ public class BarberService {
         return BarberMapper.toDto(barber);
     }
 
-    public List<ScheduleDto> getBarberSchedules(Long barberId) {
-        return scheduleRepository.findByBarberBarberId(barberId).stream()
-                .map(ScheduleMapper::toDto)
-                .collect(Collectors.toList());
-    }
 }

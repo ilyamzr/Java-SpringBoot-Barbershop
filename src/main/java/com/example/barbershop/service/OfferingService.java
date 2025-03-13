@@ -40,7 +40,6 @@ public class OfferingService {
         offering.setName(offeringDto.getName());
         offering.setPrice(offeringDto.getPrice());
         offering.setDuration(offeringDto.getDuration());
-        offering.setDescription(offeringDto.getDescription());
         Offering updated = offeringRepository.save(offering);
         return OfferingMapper.toDto(updated);
     }

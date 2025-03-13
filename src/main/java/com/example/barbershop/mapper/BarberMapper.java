@@ -18,7 +18,7 @@ public class BarberMapper {
         }
         if (barber.getSchedules() != null) {
             dto.setSchedules(barber.getSchedules().stream()
-                    .map(ScheduleMapper::toDtoShallow)
+                    .map(ScheduleMapper::toDto)
                     .collect(Collectors.toSet()));
         }
         return dto;
@@ -28,7 +28,6 @@ public class BarberMapper {
         BarberDto dto = new BarberDto();
         dto.setBarberId(barber.getBarberId());
         dto.setName(barber.getName());
-        dto.setWorkingDays(barber.getWorkingDays());
         return dto;
     }
 
@@ -36,7 +35,6 @@ public class BarberMapper {
         Barber barber = new Barber();
         barber.setBarberId(dto.getBarberId());
         barber.setName(dto.getName());
-        barber.setWorkingDays(dto.getWorkingDays());
         return barber;
     }
 }

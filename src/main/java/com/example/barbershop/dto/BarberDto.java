@@ -9,7 +9,6 @@ import lombok.Setter;
 public class BarberDto {
     private Long barberId;
     private String name;
-    private Set<String> workingDays;
     private Set<OfferingDto> offerings;
     private Set<ScheduleDto> schedules;
 }

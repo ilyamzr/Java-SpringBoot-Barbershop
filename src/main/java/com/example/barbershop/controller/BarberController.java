@@ -33,7 +33,7 @@ public class BarberController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping()
     public BarberDto createBarber(@RequestBody BarberDto barberDto) {
         return barberService.save(barberDto);
     }

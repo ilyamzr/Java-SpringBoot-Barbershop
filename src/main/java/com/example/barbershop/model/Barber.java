@@ -3,7 +3,6 @@ package com.example.barbershop.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +17,6 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Setter
 @Getter
 @Entity
@@ -29,9 +27,6 @@ public class Barber {
     private Long barberId;
     private String name;
 
-    @ElementCollection
-    private Set<String> workingDays = new HashSet<>();
-
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "barber_offering",
@@ -40,7 +35,7 @@ public class Barber {
     )
     private Set<Offering> offerings = new HashSet<>();
 
-    @OneToMany(mappedBy = "barber", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "barber", cascade = {CascadeType.PERSIST,
+                                               CascadeType.MERGE}, orphanRemoval = true)
     private Set<Schedule> schedules = new HashSet<>();
-
 }

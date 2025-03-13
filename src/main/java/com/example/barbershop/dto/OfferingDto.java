@@ -7,10 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OfferingDto {
-    private Long serviceId;
+    private Long offeringId;
     private String name;
     private double price;
     private int duration;
-    private String description;
     private Set<BarberDto> barbers;
 }

@@ -20,21 +20,19 @@ public class OfferingMapper {
 
     public OfferingDto toDtoShallow(Offering offering) {
         OfferingDto dto = new OfferingDto();
-        dto.setServiceId(offering.getServiceId());
+        dto.setOfferingId(offering.getOfferingId());
         dto.setName(offering.getName());
         dto.setPrice(offering.getPrice());
         dto.setDuration(offering.getDuration());
-        dto.setDescription(offering.getDescription());
         return dto;
     }
 
     public Offering toEntity(OfferingDto dto) {
         Offering offering = new Offering();
-        offering.setServiceId(dto.getServiceId());
+        offering.setOfferingId(dto.getOfferingId());
         offering.setName(dto.getName());
         offering.setPrice(dto.getPrice());
         offering.setDuration(dto.getDuration());
-        offering.setDescription(dto.getDescription());
         return offering;
     }
 }

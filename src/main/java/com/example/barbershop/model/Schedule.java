@@ -1,31 +1,34 @@
 package com.example.barbershop.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "scheduleId")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @JoinTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+    private Set<DayOfWeek> availableDays = new HashSet<>();
+
+    private LocalTime startTime;
+    private LocalTime endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "barber_id", nullable = false)
+    @JoinColumn(name = "barber_id")
     private Barber barber;
+
+    public enum DayOfWeek {
+        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+    }
 }

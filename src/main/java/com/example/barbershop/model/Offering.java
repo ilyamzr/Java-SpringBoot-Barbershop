@@ -16,15 +16,14 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "serviceId")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "offeringId")
 public class Offering {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long serviceId;
+    private Long offeringId;
     private String name;
     private double price;
-    private int duration; // в минутах
-    private String description;
+    private int duration;
 
     @ManyToMany(mappedBy = "offerings", fetch = FetchType.LAZY)
     private Set<Barber> barbers = new HashSet<>();

@@ -1,14 +1,17 @@
 package com.example.barbershop.dto;
 
-import java.time.LocalDateTime;
+import com.example.barbershop.model.Schedule.DayOfWeek;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalTime;
+import java.util.Set;
 
 @Getter
 @Setter
 public class ScheduleDto {
     private Long scheduleId;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private BarberDto barber;
+    private Set<DayOfWeek> availableDays;
+    private LocalTime startTime;
+    private LocalTime endTime;
 }
