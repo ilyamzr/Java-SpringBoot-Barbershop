@@ -44,9 +44,6 @@ public class LocationService {
 
     @Transactional
     public void deleteLocation(Long locationId) {
-        if (!locationRepository.existsById(locationId)) {
-            throw new RuntimeException(LOCATION_NOT_FOUND);
-        }
         locationRepository.deleteById(locationId);
     }
 }
