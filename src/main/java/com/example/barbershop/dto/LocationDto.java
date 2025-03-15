@@ -4,12 +4,11 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
-public class OfferingDto {
-    private Long offeringId;
+@Getter
+public class LocationDto {
+    private Long locationId;
     private String name;
-    private double price;
-    private int duration;
+    private String address;
     private Set<String> barbers;
 }

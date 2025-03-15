@@ -11,7 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
+import java.sql.Time;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class Barber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long barberId;
     private String name;
+    private Set<DayOfWeek> availableDays = new HashSet<>();
+    private Time startTime;
+    private Time endTime;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(
@@ -35,7 +39,11 @@ public class Barber {
     )
     private Set<Offering> offerings = new HashSet<>();
 
-    @OneToMany(mappedBy = "barber", cascade = {CascadeType.PERSIST,
-                                               CascadeType.MERGE}, orphanRemoval = true)
-    private Set<Schedule> schedules = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    public enum DayOfWeek {
+        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+    }
 }

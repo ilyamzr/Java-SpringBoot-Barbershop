@@ -1,6 +1,7 @@
 package com.example.barbershop.mapper;
 
 import com.example.barbershop.dto.OfferingDto;
+import com.example.barbershop.model.Barber;
 import com.example.barbershop.model.Offering;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
@@ -12,7 +13,7 @@ public class OfferingMapper {
         OfferingDto dto = toDtoShallow(offering);
         if (offering.getBarbers() != null) {
             dto.setBarbers(offering.getBarbers().stream()
-                    .map(BarberMapper::toDtoShallow)
+                    .map(Barber::getName)
                     .collect(Collectors.toSet()));
         }
         return dto;

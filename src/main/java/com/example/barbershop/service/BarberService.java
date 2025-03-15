@@ -1,14 +1,13 @@
 package com.example.barbershop.service;
 
 import com.example.barbershop.dto.BarberDto;
-import com.example.barbershop.dto.ScheduleDto;
 import com.example.barbershop.mapper.BarberMapper;
-import com.example.barbershop.mapper.ScheduleMapper;
 import com.example.barbershop.model.Barber;
+import com.example.barbershop.model.Location;
 import com.example.barbershop.model.Offering;
 import com.example.barbershop.repository.BarberRepository;
+import com.example.barbershop.repository.LocationRepository;
 import com.example.barbershop.repository.OfferingRepository;
-import com.example.barbershop.repository.ScheduleRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +23,7 @@ public class BarberService {
 
     private final BarberRepository barberRepository;
     private final OfferingRepository offeringRepository;
+    private final LocationRepository locationRepository;
 
     public List<BarberDto> findAll() {
         return barberRepository.findAll().stream()
@@ -47,6 +47,9 @@ public class BarberService {
         Barber barber = barberRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(BARBER_NOT_FOUND));
         barber.setName(barberDto.getName());
+        barber.setAvailableDays(barberDto.getAvailableDays());
+        barber.setStartTime(barberDto.getStartTime());
+        barber.setEndTime(barberDto.getEndTime());
         Barber updated = barberRepository.save(barber);
         return BarberMapper.toDto(updated);
     }
@@ -80,6 +83,35 @@ public class BarberService {
         offering.getBarbers().remove(barber);
         barberRepository.save(barber);
         offeringRepository.save(offering);
+        return BarberMapper.toDto(barber);
+    }
+
+    @Transactional
+    public BarberDto assignLocationToBarber(Long barberId, Long locationId) {
+        Barber barber = barberRepository.findById(barberId)
+                .orElseThrow(() -> new RuntimeException(BARBER_NOT_FOUND));
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new RuntimeException("Location not found"));
+
+        barber.setLocation(location);
+        location.getBarbers().add(barber);
+        barberRepository.save(barber);
+        locationRepository.save(location);
+        return BarberMapper.toDto(barber);
+    }
+
+    @Transactional
+    public BarberDto removeLocationFromBarber(Long barberId) {
+        Barber barber = barberRepository.findById(barberId)
+                .orElseThrow(() -> new RuntimeException(BARBER_NOT_FOUND));
+        Location location = barber.getLocation();
+
+        if (location != null) {
+            location.getBarbers().remove(barber);
+            barber.setLocation(null);
+            locationRepository.save(location);
+        }
+        barberRepository.save(barber);
         return BarberMapper.toDto(barber);
     }
 

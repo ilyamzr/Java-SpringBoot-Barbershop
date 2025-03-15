@@ -64,4 +64,19 @@ public class BarberController {
         BarberDto updatedBarber = barberService.removeOfferingFromBarber(barberId, offeringId);
         return ResponseEntity.ok(updatedBarber);
     }
+
+    @PostMapping("/{barberId}/locations/{locationId}")
+    public ResponseEntity<BarberDto> assignLocationToBarber(
+            @PathVariable Long barberId,
+            @PathVariable Long locationId) {
+        BarberDto updatedBarber = barberService.assignLocationToBarber(barberId, locationId);
+        return ResponseEntity.ok(updatedBarber);
+    }
+
+    @DeleteMapping("/{barberId}/locations")
+    public ResponseEntity<BarberDto> removeLocationFromBarber(
+            @PathVariable Long barberId) {
+        BarberDto updatedBarber = barberService.removeLocationFromBarber(barberId);
+        return ResponseEntity.ok(updatedBarber);
+    }
 }
