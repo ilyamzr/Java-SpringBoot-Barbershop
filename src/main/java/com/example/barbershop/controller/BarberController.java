@@ -86,4 +86,10 @@ public class BarberController {
         List<BarberDto> barbers = barberService.getBarbersByLocationName(locationName);
         return ResponseEntity.ok(barbers);
     }
+
+    @GetMapping("/by-offering/{offeringId}")
+    public ResponseEntity<List<BarberDto>> getBarbersByOfferingId(@PathVariable Long offeringId) {
+        List<BarberDto> barbers = barberService.getBarbersByOfferingId(offeringId);
+        return ResponseEntity.ok(barbers);
+    }
 }

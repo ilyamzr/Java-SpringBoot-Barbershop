@@ -175,4 +175,11 @@ public class BarberService {
                 .map(BarberMapper::toDto)
                 .toList();
     }
+
+    public List<BarberDto> getBarbersByOfferingId(Long offeringId) {
+        return barberRepository.findBarbersByOfferingId(offeringId).stream()
+                .map(BarberMapper::toDto)
+                .toList();
+    }
+
 }
