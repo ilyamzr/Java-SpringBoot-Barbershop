@@ -169,4 +169,10 @@ public class BarberService {
 
         return BarberMapper.toDto(barber);
     }
+
+    public List<BarberDto> getBarbersByLocationName(String locationName) {
+        return barberRepository.findBarbersByLocationName(locationName).stream()
+                .map(BarberMapper::toDto)
+                .toList();
+    }
 }

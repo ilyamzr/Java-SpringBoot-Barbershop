@@ -22,8 +22,15 @@ public class LocationController {
     private final LocationService locationService;
 
     @GetMapping
-    public List<LocationDto> getLocation() {
+    public List<LocationDto> getLocations() {
         return locationService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LocationDto> getLocationById(@PathVariable Long id) {
+        return locationService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
