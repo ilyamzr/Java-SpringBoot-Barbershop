@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class Cache {
     private static final int MAX_CACHE_SIZE = 100;
-    private final Map<String, Object> cache;
+    private final Map<String, Object> cacheMap;
     private static final Logger logger = LoggerFactory.getLogger(Cache.class);
 
     public Cache() {
-        this.cache = new LinkedHashMap<>(MAX_CACHE_SIZE, 0.75f, true) {
+        this.cacheMap = new LinkedHashMap<>(MAX_CACHE_SIZE, 0.75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<String, Object> eldest) {
                 boolean shouldRemove = size() > MAX_CACHE_SIZE;
@@ -28,15 +28,15 @@ public class Cache {
     }
 
     public void put(String key, Object value) {
-        synchronized (cache) {
-            cache.put(key, value);
+        synchronized (cacheMap) {
+            cacheMap.put(key, value);
             logger.info("Добавлено в кэш: ключ={}, значение={}", key, value);
         }
     }
 
     public Optional<Object> get(String key) {
-        synchronized (cache) {
-            Object value = cache.get(key);
+        synchronized (cacheMap) {
+            Object value = cacheMap.get(key);
             if (value != null) {
                 logger.info("Попадание в кэш: ключ={}, значение={}", key, value);
             } else {
@@ -47,8 +47,8 @@ public class Cache {
     }
 
     public void remove(String key) {
-        synchronized (cache) {
-            Object removedValue = cache.remove(key);
+        synchronized (cacheMap) {
+            Object removedValue = cacheMap.remove(key);
             if (removedValue != null) {
                 logger.info("Удалено из кэша: ключ={}, значение={}", key, removedValue);
             } else {
@@ -58,8 +58,8 @@ public class Cache {
     }
 
     public int size() {
-        synchronized (cache) {
-            int size = cache.size();
+        synchronized (cacheMap) {
+            int size = cacheMap.size();
             logger.info("Текущий размер кэша: {}", size);
             return size;
         }
