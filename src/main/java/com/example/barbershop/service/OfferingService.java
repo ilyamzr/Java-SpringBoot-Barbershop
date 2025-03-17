@@ -5,12 +5,11 @@ import com.example.barbershop.dto.OfferingDto;
 import com.example.barbershop.mapper.OfferingMapper;
 import com.example.barbershop.model.Offering;
 import com.example.barbershop.repository.OfferingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,6 @@ public class OfferingService {
                 .map(OfferingMapper::toDto)
                 .collect(Collectors.toList());
 
-        // Сохраняем в кэш
         cache.put(ALL_OFFERINGS_CACHE_KEY, offerings);
 
         return offerings;

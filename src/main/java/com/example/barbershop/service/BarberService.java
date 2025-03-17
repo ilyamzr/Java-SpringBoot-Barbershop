@@ -9,12 +9,13 @@ import com.example.barbershop.model.Offering;
 import com.example.barbershop.repository.BarberRepository;
 import com.example.barbershop.repository.LocationRepository;
 import com.example.barbershop.repository.OfferingRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -66,9 +67,8 @@ public class BarberService {
         BarberDto savedDto = BarberMapper.toDto(saved);
 
         String cacheKey = BARBER_CACHE_KEY_PREFIX + saved.getBarberId();
-        cache.put(cacheKey, savedDto);
-
         cache.remove(ALL_BARBERS_CACHE_KEY);
+        cache.put(cacheKey, savedDto);
 
         return savedDto;
     }

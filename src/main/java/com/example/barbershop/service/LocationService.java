@@ -5,13 +5,12 @@ import com.example.barbershop.dto.LocationDto;
 import com.example.barbershop.mapper.LocationMapper;
 import com.example.barbershop.model.Location;
 import com.example.barbershop.repository.LocationRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
