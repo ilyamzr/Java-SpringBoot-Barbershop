@@ -22,6 +22,7 @@ public class Location {
     private String name;
     private String address;
 
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "location", cascade = {CascadeType.PERSIST,
+        CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
     private Set<Barber> barbers = new HashSet<>();
 }

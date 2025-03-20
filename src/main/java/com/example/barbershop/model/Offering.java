@@ -2,6 +2,7 @@ package com.example.barbershop.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +26,8 @@ public class Offering {
     private double price;
     private int duration;
 
-    @ManyToMany(mappedBy = "offerings", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "offerings", cascade = {CascadeType.PERSIST,
+                                                   CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<Barber> barbers = new HashSet<>();
 
 }

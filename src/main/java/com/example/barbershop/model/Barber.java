@@ -39,7 +39,8 @@ public class Barber {
     )
     private Set<Offering> offerings = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,
+        CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "location_id")
     private Location location;
 
