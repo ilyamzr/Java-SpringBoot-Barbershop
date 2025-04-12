@@ -176,10 +176,26 @@ public class BarberService {
                 .toList();
     }
 
-    public List<BarberDto> getBarbersByOfferingId(Long offeringId) {
-        return barberRepository.findBarbersByOfferingId(offeringId).stream()
+    public List<BarberDto> getBarbersByLocationNameNative(String locationName) {
+        return barberRepository.findBarbersByLocationNameNative(locationName).stream()
                 .map(BarberMapper::toDto)
                 .toList();
     }
 
+    @Transactional
+    public List<BarberDto> saveAll(List<BarberDto> barberDtos) {
+        List<BarberDto> savedDtos = barberDtos.stream()
+                .map(BarberMapper::toEntity)
+                .map(barberRepository::save)
+                .map(BarberMapper::toDto)
+                .collect(Collectors.toList());
+
+        cache.remove(ALL_BARBERS_CACHE_KEY);
+
+        savedDtos.forEach(dto ->
+                cache.put(BARBER_CACHE_KEY_PREFIX + dto.getBarberId(), dto)
+        );
+
+        return savedDtos;
+    }
 }

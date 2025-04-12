@@ -14,7 +14,7 @@ public class Cache {
     private static final int MAX_CACHE_SIZE = 2;
     private final Map<String, CacheEntry> cacheMap;
     private static final Logger logger = LoggerFactory.getLogger(Cache.class);
-    private static final Duration TTL = Duration.ofMinutes(10);
+    private static final Duration TTL = Duration.ofMinutes(1);
 
     private static class CacheEntry {
         private final Object value;
@@ -46,7 +46,6 @@ public class Cache {
 
     public void put(String key, Object value) {
         synchronized (cacheMap) {
-            cleanUp();
             cacheMap.put(key, new CacheEntry(value));
             logger.info("Добавлено в кэш: ключ={}", key);
         }
@@ -54,7 +53,6 @@ public class Cache {
 
     public Optional<Object> get(String key) {
         synchronized (cacheMap) {
-            cleanUp();
             CacheEntry entry = cacheMap.get(key);
             if (entry != null) {
                 logger.info("Попадание в кэш: ключ={}", key);
@@ -78,6 +76,7 @@ public class Cache {
     }
 
     private void cleanUp() {
+        logger.info("Очистка кэша");
         cacheMap.entrySet().removeIf(entry -> entry.getValue().isExpired());
     }
 
