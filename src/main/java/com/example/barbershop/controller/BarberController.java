@@ -45,40 +45,38 @@ public class BarberController {
     @GetMapping("/{id}")
     public ResponseEntity<BarberDto> getBarberById(@PathVariable Long id) {
         validateId(id);
-        logger.info("Fetching barber with id: {}", id);
+        logger.info("Fetching barber with ID");
         return barberService.findById(id)
                 .map(barber -> {
-                    logger.info("Found barber: {}", barber);
+                    logger.info("Barber found");
                     return ResponseEntity.ok(barber);
                 })
                 .orElseGet(() -> {
-                    logger.warn("Barber not found for id: {}", id);
+                    logger.warn("Barber not found");
                     return ResponseEntity.notFound().build();
                 });
     }
 
-    @Operation(summary = "Create a new barber", description =
-            "Create a new barber with the provided details.")
+    @Operation(summary = "Create a new barber", description = "Create a new barber with the provided details.")
     @PostMapping()
     public BarberDto createBarber(@RequestBody BarberDto barberDto) {
         validateBarberDto(barberDto);
-        logger.info("Creating new barber: {}", barberDto);
+        logger.info("Creating new barber");
         BarberDto createdBarber = barberService.save(barberDto);
-        logger.info("Created barber with id: {}", createdBarber.getBarberId());
+        logger.info("Barber created");
         return createdBarber;
     }
 
-    @Operation(summary = "Update a barber", description
-            = "Update the details of an existing barber by their ID.")
+    @Operation(summary = "Update a barber", description = "Update the details of an existing barber by their ID.")
     @PutMapping("/{id}")
     public ResponseEntity<BarberDto> updateBarber(
             @PathVariable Long id,
             @RequestBody BarberDto barberDto) {
         validateId(id);
         validateBarberDto(barberDto);
-        logger.info("Updating barber with id: {}", id);
+        logger.info("Updating barber");
         BarberDto updatedBarber = barberService.updateBarber(id, barberDto);
-        logger.info("Updated barber with id: {}", id);
+        logger.info("Barber updated");
         return ResponseEntity.ok(updatedBarber);
     }
 
@@ -86,51 +84,48 @@ public class BarberController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBarber(@PathVariable Long id) {
         validateId(id);
-        logger.info("Deleting barber with id: {}", id);
+        logger.info("Deleting barber");
         barberService.deleteById(id);
-        logger.info("Deleted barber with id: {}", id);
+        logger.info("Barber deleted");
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Add an offering to a barber", description
-            = "Add a specific offering to a barber by their IDs.")
+    @Operation(summary = "Add an offering to a barber", description = "Add a specific offering to a barber by their IDs.")
     @PostMapping("/{barberId}/offerings/{offeringId}")
     public ResponseEntity<BarberDto> addOfferingToBarber(
             @PathVariable Long barberId,
             @PathVariable Long offeringId) {
         validateId(barberId);
         validateId(offeringId);
-        logger.info("Adding offering {} to barber {}", offeringId, barberId);
+        logger.info("Adding offering to barber");
         BarberDto updatedBarber = barberService.addOfferingToBarber(barberId, offeringId);
-        logger.info("Successfully added offering {} to barber {}", offeringId, barberId);
+        logger.info("Offering added to barber");
         return ResponseEntity.ok(updatedBarber);
     }
 
-    @Operation(summary = "Remove an offering from a barber", description
-            = "Remove a specific offering from a barber by their IDs.")
+    @Operation(summary = "Remove an offering from a barber", description = "Remove a specific offering from a barber by their IDs.")
     @DeleteMapping("/{barberId}/offerings/{offeringId}")
     public ResponseEntity<BarberDto> removeOfferingFromBarber(
             @PathVariable Long barberId,
             @PathVariable Long offeringId) {
         validateId(barberId);
         validateId(offeringId);
-        logger.info("Removing offering {} from barber {}", offeringId, barberId);
+        logger.info("Removing offering from barber");
         BarberDto updatedBarber = barberService.removeOfferingFromBarber(barberId, offeringId);
-        logger.info("Successfully removed offering {} from barber {}", offeringId, barberId);
+        logger.info("Offering removed from barber");
         return ResponseEntity.ok(updatedBarber);
     }
 
-    @Operation(summary = "Get barbers by location", description
-            = "Retrieve a list of barbers by their location name.")
+    @Operation(summary = "Get barbers by location", description = "Retrieve a list of barbers by their location name.")
     @GetMapping("/by-location")
     public ResponseEntity<List<BarberDto>> getBarbersByLocation(
             @RequestParam String locationName) {
         if (locationName == null || locationName.trim().isEmpty()) {
             throw new ValidationException(LOCATION_NAME_REQUIRED);
         }
-        logger.info("Fetching barbers by location: {}", locationName);
+        logger.info("Fetching barbers by location");
         List<BarberDto> barbers = barberService.getBarbersByLocationName(locationName);
-        logger.info("Found {} barbers for location {}", barbers.size(), locationName);
+        logger.info("Barbers found for location");
         return ResponseEntity.ok(barbers);
     }
 
@@ -163,16 +158,12 @@ public class BarberController {
     }
 
     @PostMapping("/bulk")
-    @Operation(summary = "Create multiple barbers", description
-            = "Create multiple barbers in a single request.")
+    @Operation(summary = "Create multiple barbers", description = "Create multiple barbers in a single request.")
     public ResponseEntity<List<BarberDto>> createBarbers(@RequestBody List<BarberDto> barberDtos) {
-        logger.info("Creating multiple barbers, count: {}", barberDtos.size());
-
+        logger.info("Creating multiple barbers");
         barberDtos.forEach(this::validateBarberDto);
-
         List<BarberDto> savedBarbers = barberService.saveAll(barberDtos);
-
-        logger.info("Successfully created {} barbers", savedBarbers.size());
+        logger.info("Multiple barbers created");
         return ResponseEntity.ok(savedBarbers);
     }
 }
