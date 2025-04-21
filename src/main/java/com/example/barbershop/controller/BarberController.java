@@ -57,7 +57,8 @@ public class BarberController {
                 });
     }
 
-    @Operation(summary = "Create a new barber", description = "Create a new barber with the provided details.")
+    @Operation(summary = "Create a new barber", description
+            = "Create a new barber with the provided details.")
     @PostMapping()
     public BarberDto createBarber(@RequestBody BarberDto barberDto) {
         validateBarberDto(barberDto);
@@ -67,7 +68,8 @@ public class BarberController {
         return createdBarber;
     }
 
-    @Operation(summary = "Update a barber", description = "Update the details of an existing barber by their ID.")
+    @Operation(summary = "Update a barber", description
+            = "Update the details of an existing barber by their ID.")
     @PutMapping("/{id}")
     public ResponseEntity<BarberDto> updateBarber(
             @PathVariable Long id,
@@ -90,7 +92,8 @@ public class BarberController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Add an offering to a barber", description = "Add a specific offering to a barber by their IDs.")
+    @Operation(summary = "Add an offering to a barber", description
+            = "Add a specific offering to a barber by their IDs.")
     @PostMapping("/{barberId}/offerings/{offeringId}")
     public ResponseEntity<BarberDto> addOfferingToBarber(
             @PathVariable Long barberId,
@@ -103,7 +106,8 @@ public class BarberController {
         return ResponseEntity.ok(updatedBarber);
     }
 
-    @Operation(summary = "Remove an offering from a barber", description = "Remove a specific offering from a barber by their IDs.")
+    @Operation(summary = "Remove an offering from a barber", description
+            = "Remove a specific offering from a barber by their IDs.")
     @DeleteMapping("/{barberId}/offerings/{offeringId}")
     public ResponseEntity<BarberDto> removeOfferingFromBarber(
             @PathVariable Long barberId,
@@ -116,7 +120,8 @@ public class BarberController {
         return ResponseEntity.ok(updatedBarber);
     }
 
-    @Operation(summary = "Get barbers by location", description = "Retrieve a list of barbers by their location name.")
+    @Operation(summary = "Get barbers by location", description
+            = "Retrieve a list of barbers by their location name.")
     @GetMapping("/by-location")
     public ResponseEntity<List<BarberDto>> getBarbersByLocation(
             @RequestParam String locationName) {
@@ -152,13 +157,18 @@ public class BarberController {
             throw new ValidationException(END_TIME_REQUIRED);
         }
 
+        if (barberDto.getEndTime().equals(barberDto.getStartTime())) {
+            throw new ValidationException("Start time and end time cannot be the same");
+        }
+
         if (barberDto.getEndTime().before(barberDto.getStartTime())) {
             throw new ValidationException(END_TIME_AFTER_START);
         }
     }
 
     @PostMapping("/bulk")
-    @Operation(summary = "Create multiple barbers", description = "Create multiple barbers in a single request.")
+    @Operation(summary = "Create multiple barbers", description
+            = "Create multiple barbers in a single request.")
     public ResponseEntity<List<BarberDto>> createBarbers(@RequestBody List<BarberDto> barberDtos) {
         logger.info("Creating multiple barbers");
         barberDtos.forEach(this::validateBarberDto);

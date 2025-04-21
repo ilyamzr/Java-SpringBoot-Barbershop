@@ -38,7 +38,8 @@ public class LogController {
 
         if (!DATE_PATTERN.matcher(date).matches()) {
             logger.warn("Invalid date format received");
-            return ResponseEntity.badRequest().body("Invalid date format. Use YYYY-MM-DD".getBytes());
+            return ResponseEntity.badRequest()
+                    .body("Invalid date format. Use YYYY-MM-DD".getBytes());
         }
 
         String logFileName = LOG_DIRECTORY + LOG_FILE_PREFIX + date + LOG_FILE_EXTENSION;
@@ -50,7 +51,6 @@ public class LogController {
         }
 
         try (Stream<String> linesStream = Files.lines(logFilePath, StandardCharsets.UTF_8)) {
-            List<String> filteredLines = filterLogLines(linesStream, level);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.TEXT_PLAIN);
@@ -58,6 +58,7 @@ public class LogController {
                     LOG_FILE_PREFIX + date + "-" + level + LOG_FILE_EXTENSION);
 
             logger.info("Log file processed successfully");
+            List<String> filteredLines = filterLogLines(linesStream, level);
             byte[] logFileBytes = String.join("\n", filteredLines)
                     .getBytes(StandardCharsets.UTF_8);
 

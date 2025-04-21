@@ -122,5 +122,6 @@ public class OfferingController {
         if (offeringDto.getDuration() > 240) {
             throw new ValidationException(DURATION_MAX);
         }
+
     }
 }
