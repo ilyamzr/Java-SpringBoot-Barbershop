@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogController {
 
     private final LogField logFileId;
+    private static final Path LOGS_DIRECTORY = Path.of("logs");
 
     public LogController(LogField logFileId) {
         this.logFileId = logFileId;
@@ -39,10 +40,9 @@ public class LogController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        String logFileName = "logs/barbershop-" + date + ".log";
-        Path logFilePath = Path.of(logFileName).normalize();
+        Path logFilePath = LOGS_DIRECTORY.resolve("barbershop-" + date + ".log").normalize();
 
-        if (Files.exists(logFilePath)) {
+        if (Files.exists(logFilePath) && logFilePath.startsWith(LOGS_DIRECTORY)) {
             try (var linesStream = Files.lines(logFilePath, StandardCharsets.UTF_8)) {
                 List<String> lines;
 
@@ -77,10 +77,9 @@ public class LogController {
 
     @Operation(summary = "Create a task to generate a log file asynchronously")
     @PostMapping("/generate")
-    @PostMapping("/generate")
     public ResponseEntity<String> createLogFileTask(
-        @RequestParam String date,
-        @RequestParam(required = false, defaultValue = "all") String level) {
+            @RequestParam String date,
+            @RequestParam(required = false, defaultValue = "all") String level) {
 
         if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
             return new ResponseEntity<>("Invalid date format. Please use 'yyyy-MM-dd'.", HttpStatus.BAD_REQUEST);
@@ -105,7 +104,7 @@ public class LogController {
     @GetMapping("/download/{taskId}")
     public ResponseEntity<byte[]> downloadLogFile(@PathVariable String taskId) {
         Path filePath = logFileId.getLogFilePath(taskId);
-        if (filePath == null) {
+        if (filePath == null || !filePath.startsWith(LOGS_DIRECTORY)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
