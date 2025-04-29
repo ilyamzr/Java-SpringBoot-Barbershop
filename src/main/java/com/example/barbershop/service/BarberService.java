@@ -231,7 +231,7 @@ public class BarberService {
             : Set.of();
     List<String> availableDays = availableDaysSet.stream()
             .map(Enum::name)
-            .collect(Collectors.toList());
+            .collect(Stream.toList());
     if (availableDays.isEmpty()) {
         logger.warn("No available days for barberId: {}. Using all days as fallback.", barberId);
         availableDays = List.of("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
