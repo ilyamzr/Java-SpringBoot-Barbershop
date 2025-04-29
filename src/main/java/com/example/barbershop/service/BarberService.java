@@ -217,7 +217,7 @@ public class BarberService {
     logger.info("Fetching availability for barberId: {}", barberId);
 
     Barber barber = barberRepository.findById(barberId)
-            .orElseThrow(() -> new RuntimeException("Barber not found"));
+            .orElseThrow(() -> new RuntimeException(BARBER_NOT_FOUND));
     logger.info("Barber found: name={}, availableDays={}, startTime={}, endTime={}",
             barber.getName(), barber.getAvailableDays(),
             barber.getStartTime(), barber.getEndTime());
