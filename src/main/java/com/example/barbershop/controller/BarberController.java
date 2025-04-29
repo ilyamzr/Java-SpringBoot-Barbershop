@@ -168,9 +168,7 @@ public class BarberController {
         if (locationName == null || locationName.trim().isEmpty()) {
             throw new ValidationException(LOCATION_NAME_REQUIRED);
         }
-        logger.info("Fetching barbers by location: {}", locationName);
         List<BarberDto> barbers = barberService.getBarbersByLocationName(locationName);
-        logger.info("Found {} barbers for location: {}", barbers.size(), locationName);
         return ResponseEntity.ok(barbers);
     }
 

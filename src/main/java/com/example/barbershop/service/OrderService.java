@@ -180,6 +180,6 @@ public class OrderService {
     public List<OrderDto> saveAll(List<OrderDto> dtos) {
         return dtos.stream()
                 .map(this::save)
-                .collect(Stream.toList());
+                .collect(Collectors.toList());
     }
 }

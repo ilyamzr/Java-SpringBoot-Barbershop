@@ -242,7 +242,7 @@ public class BarberService {
             String dayOfWeek = date.getDayOfWeek().toString();
             logger.info("Checking date: {}, dayOfWeek: {}", date, dayOfWeek);
 
-            if (!availableDays.stream().anyMatch(day -> day.equalsIgnoreCase(dayOfWeek))) {
+            if (availableDays.stream().noneMatch(day -> day.equalsIgnoreCase(dayOfWeek))) {
                 logger.info("Skipping date {}: not in availableDays {}", date, availableDays);
                 continue;
             }
