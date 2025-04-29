@@ -57,6 +57,17 @@ public class OfferingController {
                 });
     }
 
+    @Operation(summary = "Get offerings by barber ID", description
+            = "Retrieve all offerings associated with a specific barber.")
+    @GetMapping("/barber/{barberId}")
+    public ResponseEntity<List<OfferingDto>> getOfferingsByBarberId(@PathVariable Long barberId) {
+        validateId(barberId);
+        logger.info("Fetching offerings for barberId: {}", barberId);
+        List<OfferingDto> offerings = offeringService.findByBarberId(barberId);
+        logger.info("Found {} offerings for barberId: {}", offerings.size(), barberId);
+        return ResponseEntity.ok(offerings);
+    }
+
     @Operation(summary = "Create a new offering", description
             = "Create a new offering with the provided details.")
     @PostMapping
@@ -122,6 +133,5 @@ public class OfferingController {
         if (offeringDto.getDuration() > 240) {
             throw new ValidationException(DURATION_MAX);
         }
-
     }
 }

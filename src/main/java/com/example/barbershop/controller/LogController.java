@@ -1,85 +1,119 @@
 package com.example.barbershop.controller;
 
+import com.example.barbershop.log.LogField;
+import com.example.barbershop.model.LogFileTask;
 import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/logs")
 public class LogController {
-    private static final Logger logger = LoggerFactory.getLogger(LogController.class);
 
-    private static final String LOG_DIRECTORY = "logs/";
-    private static final String LOG_FILE_PREFIX = "barbershop-";
-    private static final String LOG_FILE_EXTENSION = ".log";
-    private static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    private final LogField logFileId;
 
-    @Operation(summary = "Get log file filtered by date and log level")
-    @GetMapping("/logs")
+    public LogController(LogField logFileId) {
+        this.logFileId = logFileId;
+    }
+
+    @Operation(summary = "Request log file sorted by date and logging level")
+    @GetMapping
     public ResponseEntity<byte[]> getLogFile(
             @RequestParam String date,
             @RequestParam(required = false, defaultValue = "all") String level) {
-
-        logger.info("Processing log file request");
-
-        if (!DATE_PATTERN.matcher(date).matches()) {
-            logger.warn("Invalid date format received");
-            return ResponseEntity.badRequest()
-                    .body("Invalid date format. Use YYYY-MM-DD".getBytes());
+        if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        String logFileName = LOG_DIRECTORY + LOG_FILE_PREFIX + date + LOG_FILE_EXTENSION;
-        Path logFilePath = Paths.get(logFileName).normalize();
+        String logFileName = "logs/barbershop-" + date + ".log";
+        Path logFilePath = Path.of(logFileName).normalize();
 
-        if (!Files.exists(logFilePath)) {
-            logger.warn("Requested log file not found");
-            return ResponseEntity.notFound().build();
-        }
+        if (Files.exists(logFilePath)) {
+            try (var linesStream = Files.lines(logFilePath, StandardCharsets.UTF_8)) {
+                List<String> lines;
 
-        try (Stream<String> linesStream = Files.lines(logFilePath, StandardCharsets.UTF_8)) {
+                if (!"all".equalsIgnoreCase(level)) {
+                    String logLevel = level.toUpperCase();
+                    var logPattern = Pattern.compile(
+                            "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3} "
+                                    + logLevel + " ");
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            headers.setContentDispositionFormData("attachment",
-                    LOG_FILE_PREFIX + date + "-" + level + LOG_FILE_EXTENSION);
+                    lines = linesStream.filter(line -> logPattern.matcher(line).find())
+                            .toList();
+                } else {
+                    lines = linesStream.toList();
+                }
 
-            logger.info("Log file processed successfully");
-            List<String> filteredLines = filterLogLines(linesStream, level);
-            byte[] logFileBytes = String.join("\n", filteredLines)
-                    .getBytes(StandardCharsets.UTF_8);
+                byte[] logFileBytes = String.join("\n", lines)
+                        .getBytes(StandardCharsets.UTF_8);
 
-            return new ResponseEntity<>(logFileBytes, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            logger.error("Error processing log file request", e);
-            return ResponseEntity.internalServerError()
-                    .body("Error reading log file".getBytes());
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.TEXT_PLAIN);
+                headers.setContentDispositionFormData("attachment",
+                        "barbershop-" + date + "-" + level + ".log");
+
+                return new ResponseEntity<>(logFileBytes, headers, HttpStatus.OK);
+            } catch (IOException e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    private List<String> filterLogLines(Stream<String> linesStream, String level) {
-        if ("all".equalsIgnoreCase(level)) {
-            return linesStream.toList();
+    @Operation(summary = "Create a task to generate a log file asynchronously")
+    @PostMapping("/generate")
+    public ResponseEntity<String> createLogFileTask(
+            @RequestParam String date,
+            @RequestParam(required = false, defaultValue = "all") String level) {
+        if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            return new ResponseEntity<>("Invalid date format", HttpStatus.BAD_REQUEST);
         }
 
-        String logLevel = level.toUpperCase();
-        Pattern logPattern = Pattern.compile(
-                "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3} " + logLevel + " ");
+        String taskId = logFileId.createLogFileTask(date, level);
+        return new ResponseEntity<>(taskId, HttpStatus.ACCEPTED);
+    }
 
-        return linesStream.filter(line -> logPattern.matcher(line).find())
-                .toList();
+    @Operation(summary = "Get the status of a log file generation task")
+    @GetMapping("/status/{taskId}")
+    public ResponseEntity<LogFileTask> getTaskStatus(@PathVariable String taskId) {
+        LogFileTask task = logFileId.getTaskStatus(taskId);
+        if (task == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(task, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Download the generated log file by task ID")
+    @GetMapping("/download/{taskId}")
+    public ResponseEntity<byte[]> downloadLogFile(@PathVariable String taskId) {
+        Path filePath = logFileId.getLogFilePath(taskId);
+        if (filePath == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            byte[] fileBytes = Files.readAllBytes(filePath);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+            headers.setContentDispositionFormData("attachment", filePath.getFileName().toString());
+            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

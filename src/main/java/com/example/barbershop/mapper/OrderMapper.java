@@ -30,7 +30,6 @@ public class OrderMapper {
         Order order = new Order();
         order.setOrderId(dto.getOrderId());
         order.setOrderDate(dto.getOrderDate());
-        // связи проставляются в сервисе
         return order;
     }
 }

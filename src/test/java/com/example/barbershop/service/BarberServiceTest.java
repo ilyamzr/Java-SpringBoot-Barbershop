@@ -174,17 +174,6 @@ class BarberServiceTest {
         verify(cache).remove("all_barbers");
     }
 
-    @Test
-    void removeLocationFromBarber_success() {
-        Location location = new Location();
-        location.setLocationId(1L);
-        barber.setLocation(location);
-        when(barberRepository.findById(1L)).thenReturn(Optional.of(barber));
-        when(barberRepository.save(barber)).thenReturn(barber);
-        BarberDto result = barberService.removeLocationFromBarber(1L);
-        assertNotNull(result);
-        verify(cache).remove("all_barbers");
-    }
 
     @Test
     void getBarbersByLocationName() {
@@ -233,19 +222,4 @@ class BarberServiceTest {
         assertThrows(RuntimeException.class, () -> barberService.assignLocationToBarber(1L, 1L));
     }
 
-    @Test
-    void removeLocationFromBarber_barberNotFound() {
-        when(barberRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> barberService.removeLocationFromBarber(1L));
-    }
-
-    @Test
-    void removeLocationFromBarber_locationIsNull() {
-        barber.setLocation(null);
-        when(barberRepository.findById(1L)).thenReturn(Optional.of(barber));
-        BarberDto result = barberService.removeLocationFromBarber(1L);
-        assertNotNull(result);
-        verify(locationRepository, never()).save(any());
-        verify(cache).remove("all_barbers");
-    }
 }

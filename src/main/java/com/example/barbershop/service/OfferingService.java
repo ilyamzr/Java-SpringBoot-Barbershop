@@ -9,11 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class OfferingService {
+    private static final Logger logger = LoggerFactory.getLogger(OfferingService.class);
     private static final String OFFERING_NOT_FOUND = "Offering not found";
     private static final String ALL_OFFERINGS_CACHE_KEY = "all_offerings";
     private static final String OFFERING_CACHE_KEY_PREFIX = "offering_";
@@ -50,6 +54,31 @@ public class OfferingService {
         offeringDto.ifPresent(dto -> cache.put(cacheKey, dto));
 
         return offeringDto;
+    }
+
+    public List<OfferingDto> findByBarberId(Long barberId) {
+        String cacheKey = OFFERING_CACHE_KEY_PREFIX + "barber_" + barberId;
+
+        Optional<Object> cachedOfferings = cache.get(cacheKey);
+        if (cachedOfferings.isPresent()) {
+            logger.info("Returning cached offerings for barberId: {}", barberId);
+            return (List<OfferingDto>) cachedOfferings.get();
+        }
+
+        logger.info("Fetching offerings for barberId: {}", barberId);
+        List<Offering> offerings = offeringRepository.findByBarberId(barberId);
+        List<OfferingDto> offeringDtos = offerings.stream()
+                .map(OfferingMapper::toDto)
+                .collect(Collectors.toList());
+
+        logger.info("Found {} offerings for barberId: {}", offeringDtos.size(), barberId);
+        offeringDtos.forEach(dto -> logger.debug("Offering: offeringId={}, "
+                        + "name={}, price={}, duration={}",
+                dto.getOfferingId(), dto.getName(), dto.getPrice(), dto.getDuration()));
+
+        cache.put(cacheKey, offeringDtos);
+
+        return offeringDtos;
     }
 
     public OfferingDto save(OfferingDto offeringDto) {
