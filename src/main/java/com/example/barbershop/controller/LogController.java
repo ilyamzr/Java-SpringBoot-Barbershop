@@ -77,14 +77,17 @@ public class LogController {
 
     @Operation(summary = "Create a task to generate a log file asynchronously")
     @PostMapping("/generate")
+    @PostMapping("/generate")
     public ResponseEntity<String> createLogFileTask(
-            @RequestParam String date,
-            @RequestParam(required = false, defaultValue = "all") String level) {
+        @RequestParam String date,
+        @RequestParam(required = false, defaultValue = "all") String level) {
+
         if (!date.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            return new ResponseEntity<>("Invalid date format", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Invalid date format. Please use 'yyyy-MM-dd'.", HttpStatus.BAD_REQUEST);
         }
 
         String taskId = logFileId.createLogFileTask(date, level);
+
         return new ResponseEntity<>(taskId, HttpStatus.ACCEPTED);
     }
 
